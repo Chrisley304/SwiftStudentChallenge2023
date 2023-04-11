@@ -1,29 +1,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    // Global Lists or variables for the control of the app (As Swift Playgrounds do not accept the use of DataModels)
+    @StateObject private var taskList = TaskList()
+    
     var body: some View {
         TabView {
-            HomeView()
+            TodoListView()
                 .tabItem {
-                    Label("Home", systemImage: "house")
+                    Label("Homeworks", systemImage: "text.book.closed.fill")
                 }
-            StoryView()
-                .tabItem {
-                    Label("TODO", systemImage: "list.bullet")
-                }
+                .environmentObject(taskList)
             
-            FavoritesView()
+            GamesListView()
                 .tabItem {
-                    Label("Favorites", systemImage: "star")
+                    Label("Games", systemImage: "gamecontroller")
                 }
-            
+
             FunFactsView()
                 .tabItem {
-                    Label("Fun Facts", systemImage: "hand.thumbsup")
+                    Label("Points", systemImage: "lanyardcard")
                 }
         }
-        
-        
     }
 }
 

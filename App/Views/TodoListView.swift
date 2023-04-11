@@ -1,6 +1,6 @@
 //
-//  TODOView.swift
-//  StudyCompa
+//  SwiftUIView.swift
+//
 //
 //  Created by Christian Leyva on 04/04/23.
 //
@@ -8,29 +8,31 @@
 import SwiftUI
 
 struct TodoListView: View {
-    @ObservedObject var todoList: TodoList
-    
+    @EnvironmentObject var taskList: TaskList
+
     @State private var newTodoTitle: String = ""
-    
+    @State private var showAddHomeworkSheet = false
+
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("Nueva tarea")) {
+                Section("Your Progress:") {
                     HStack {
-                        TextField("Agregar nueva tarea", text: $newTodoTitle)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        Button(action: {
-                            self.addNewTodo()
-                        }) {
-                            Text("Agregar")
-                        }
+                        ColorCard(color: Color.cyan, title: "Homeworks finished", text: "5").padding(.horizontal, 10)
+                        ColorCard(color: Color.yellow, title: "Points earned", text: "50")
                     }
-                }
-                Section(header: Text("Tareas pendientes")) {
-                    ForEach(todoList.items) { item in
+                }.background(Color.clear).headerProminence(.increased)
+                Section(header:
+                    HStack {
+                        Text("Due date today:")
+                        Spacer()
+                        Button("Give me a homework", action: getRandomHomework)
+                    }
+                ) {
+                    ForEach(taskList.items) { item in
                         HStack {
                             Button(action: {
-                                self.todoList.toggleItemCompletion(item)
+                                checkHomework(homework: item)
                             }) {
                                 Image(systemName: item.isCompleted ? "checkmark.square.fill" : "square")
                                     .foregroundColor(item.isCompleted ? .green : .primary)
@@ -39,33 +41,70 @@ struct TodoListView: View {
                                 .strikethrough(item.isCompleted, color: .gray)
                             Spacer()
                             Button(action: {
-                                self.todoList.deleteItem(item)
+                                deleteHomework(homework: item)
                             }) {
                                 Image(systemName: "trash")
                                     .foregroundColor(.red)
                             }
                         }
                     }
-                }
+                }.headerProminence(.increased)
             }
             .listStyle(GroupedListStyle())
-            .navigationBarTitle("Tareas pendientes")
-            .navigationBarItems(trailing: EditButton())
+            .navigationBarTitle("Homeworks")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showAddHomeworkSheet.toggle()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $showAddHomeworkSheet) {
+                if #available(iOS 16.0, *) {
+                    VStack {
+                        HStack {
+                            TextField("Add new task", text: $newTodoTitle)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            Button(action: {
+                                self.addNewTodo()
+                            }) {
+                                Text("Add")
+                            }
+                        }
+
+                        .presentationDetents([.medium])
+                    }.padding()
+                } else {
+                    Text("This app was brought to you by Hacking with Swift")
+                }
+            }
         }
     }
-    
+
     private func addNewTodo() {
         guard !newTodoTitle.isEmpty else { return }
-        let newTodo = TodoItem(title: newTodoTitle)
-        todoList.items.append(newTodo)
+        let newTodo = Task(title: newTodoTitle)
+        taskList.items.append(newTodo)
         newTodoTitle = ""
+    }
+
+    private func getRandomHomework() {
+    }
+
+    private func checkHomework(homework: Task) {
+        taskList.toggleItemCompletion(homework)
+    }
+
+    private func deleteHomework(homework: Task) {
+        taskList.deleteItem(homework)
     }
 }
 
-struct TodoListView_Previews: PreviewProvider {
+struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
-        let todoList = TodoList()
-        todoList.items = [            TodoItem(title: "Comprar comida para el perro"),            TodoItem(title: "Llamar al médico"),            TodoItem(title: "Preparar la presentación del trabajo")        ]
-        return TodoListView(todoList: todoList)
+        let taskList = TaskList()
+        TodoListView().environmentObject(taskList)
     }
 }

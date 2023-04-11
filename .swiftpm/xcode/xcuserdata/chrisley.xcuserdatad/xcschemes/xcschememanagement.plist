@@ -32,6 +32,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>StudyCompa</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 	</dict>
 </dict>
 </plist>
