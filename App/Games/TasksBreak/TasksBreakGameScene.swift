@@ -5,11 +5,15 @@ import GameKit
 class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
     
 //    let background = SKSpriteNode(imageNamed: "bg_layer3")
-    let paddel = SKSpriteNode(color: .blue, size: CGSize(width: 150, height: 15))
+    let paddel = SKSpriteNode(color: .blue, size: CGSize(width: 120, height: 15))
 //    let ball = SKSpriteNode(imageNamed: "ballBlue")
     let ball = SKShapeNode()
     
     var stoneCounter = 0
+    let boxWidth = 100
+    let boxHeight = 30
+    var ballVelocity = 15
+    
     
     enum bitmasks: UInt32{
         case frame = 0b1 // 1
@@ -27,15 +31,6 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         
         physicsWorld.contactDelegate = self
         
-        // Background
-//        background.position = CGPoint(x: size.width / 2, y: size.height/2)
-//        background.zPosition = 1
-//        background.setScale(0.65)
-//        addChild(background)
-        
-//        backgroundColor = .gray
-        
-        
         // Player
         paddel.position = CGPoint(x: size.width / 2, y: 25)
         paddel.zPosition = 10
@@ -49,14 +44,14 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         addChild(paddel)
         
         // Ball
-        let circlePath = CGPath(ellipseIn: CGRect(x: 0, y: 0, width: 30, height: 30), transform: nil)
+        let circlePath = CGPath(ellipseIn: CGRect(x: 0, y: 0, width: 25, height: 25), transform: nil)
         ball.path = circlePath
         ball.fillColor = .red
         ball.strokeColor = .clear
         ball.position.x = paddel.position.x
         ball.position.y = paddel.position.y + 30
         ball.zPosition = 10
-        ball.physicsBody = SKPhysicsBody (circleOfRadius: 25 / 2)
+        ball.physicsBody = SKPhysicsBody (circleOfRadius: 30 / 2)
         ball.physicsBody?.friction = 0
         ball.physicsBody?.restitution = 1
         ball.physicsBody?.linearDamping = 0
@@ -68,10 +63,10 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         
         addChild (ball)
         
-        ball.physicsBody?.applyImpulse(CGVector(dx: 10, dy: -10))
+        ball.physicsBody?.applyImpulse(CGVector(dx: ballVelocity, dy: ballVelocity))
         
         // Frame
-        let frame = SKPhysicsBody (edgeLoopFrom: self.frame)
+        let frame = SKPhysicsBody(edgeLoopFrom: self.frame)
         frame.friction = 0
         frame.categoryBitMask = bitmasks.frame.rawValue
         frame.contactTestBitMask = bitmasks.ball.rawValue
@@ -80,9 +75,11 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         
         // Stones
         
-        makeStones(reihe: 4, bitmask: 0b100, y: Int(size.height) - 200)
-        makeStones(reihe: 4, bitmask: 0b100, y: Int(size.height) - 250)
-        makeStones(reihe: 4, bitmask: 0b100, y: Int(size.height) - 300)
+        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100)
+        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100 - (1*boxHeight))
+        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100 - (2*boxHeight))
+        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100 - (3*boxHeight))
+        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100 - (4*boxHeight))
         
         // 33 Stones
         
@@ -103,9 +100,11 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         self.isPaused = false
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.isPaused = false
-    }
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        if isPaused == false{
+//            self.isPaused = false
+//        }
+//    }
     
     override func update ( _ currentTime: TimeInterval) {
         if paddel.position.x < 50 {
@@ -119,16 +118,16 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
     func makeStones(reihe: Int, bitmask: UInt32, y: Int){
         for i in 1...reihe{
             
-            let box = SKShapeNode(rectOf: CGSize(width: 100, height: 50))
+            let box = SKShapeNode(rectOf: CGSize(width: boxWidth, height: boxHeight))
             box.fillColor = .white
             box.strokeColor = .black
             box.name = "Box"+String(i)
-            box.position = CGPoint(x: 0 + i*100, y: y)
+            box.position = CGPoint(x: 0 + (i*boxWidth), y: y)
             box.zPosition = 10
             
             let label = SKLabelNode(text: "Equations 📏")
             label.fontName = "Helvetica"
-            label.fontSize = 14
+            label.fontSize = 12
             label.fontColor = .black
             label.horizontalAlignmentMode = .center
             label.verticalAlignmentMode = .center
@@ -163,19 +162,29 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
             stoneCounter += 1
             
             // Score board
-            if stoneCounter == 12{
+            if stoneCounter == 15{
                 finishGame()
             }
+            
+            // Add impulse to the ball when the user get 5 points
+            if stoneCounter == 5{
+                ballVelocity += 1
+                ball.physicsBody?.applyImpulse(CGVector(dx: ballVelocity, dy: ballVelocity))
+            }else if stoneCounter == 10 {
+                ballVelocity += 1
+                ball.physicsBody?.applyImpulse(CGVector(dx: ballVelocity, dy: ballVelocity))
+            }
+            
         }
         
         if contactA.categoryBitMask == bitmasks.paddel.rawValue && contactB.categoryBitMask == bitmasks.ball.rawValue{
             if contactB.node!.position.x <= contactA.node!.frame.midX-5{
                 contactB.node?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-                contactB.node?.physicsBody?.applyImpulse(CGVector(dx: -10, dy: 10))
+                contactB.node?.physicsBody?.applyImpulse(CGVector(dx: -ballVelocity, dy: ballVelocity))
             }
             if contactB.node!.position.x <= contactA.node!.frame.midX+5{
                 contactB.node?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-                contactB.node?.physicsBody?.applyImpulse(CGVector(dx: 10, dy: 10))
+                contactB.node?.physicsBody?.applyImpulse(CGVector(dx: ballVelocity, dy: ballVelocity))
             }
         }
         
