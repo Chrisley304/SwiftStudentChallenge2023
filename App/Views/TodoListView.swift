@@ -13,8 +13,7 @@ struct TodoListView: View {
     let today = Date()
     @State private var showAddHomeworkSheet = false
     @State private var newHomeworkDate = Date()
-    @State private var randomHomework: Int = 0
-    @State private var randomHomeworkGroupedTasksDate:Date = Date()
+    @State private var randomHomework: Task = Task(title: "", priority: Priority(id: -1, name: "", color: .yellow), classTag: HomeworkClass(id: 0, title: "Class", color: .gray), order: 0)
 //    private var classes = ["Class", "Math 📏", "Biology 🌱", "Spanish", "English", "History 📚"]
     private var classes = [HomeworkClass(id: 0, title: "Class", color: .gray), HomeworkClass(id:1, title: "Math 📏", color: .blue, textColor: .white) , HomeworkClass(id:2, title: "Biology 🌱", color: .green) , HomeworkClass(id: 3, title: "Spanish", color: .red), HomeworkClass(id:4, title: "English", color: .blue), HomeworkClass(id:5, title: "History 📚", color: .brown)]
     @State private var selectedClass = 0
@@ -39,10 +38,13 @@ struct TodoListView: View {
                         Section(header: HStack{
                             Text(dueDateSectionTitle(for: dueDate))
                             Spacer()
-                            Button("Give me a homework"){
-                                randomHomeworkGroupedTasksDate = dueDate
-                                randomHomework = Int.random(in: 0..<groupedTasks[dueDate]!.count)
-                                showHomeworkModal.toggle()
+                            if getUncompletedTasks(tasks: groupedTasks[dueDate]!).count > 1{
+                                Button("Give me a homework"){
+                                    let unCompletedTasks = getUncompletedTasks(tasks: groupedTasks[dueDate]!)
+                                    let randomHomeworkIndex = Int.random(in: 0..<unCompletedTasks.count)
+                                    randomHomework = unCompletedTasks[randomHomeworkIndex]
+                                    showHomeworkModal.toggle()
+                                }
                             }
                         }) {
                             ForEach(groupedTasks[dueDate]!) { item in
@@ -64,7 +66,7 @@ struct TodoListView: View {
                 }
             }
             .popup(isPresented: showHomeworkModal){
-                HomeworkModalCard(title: groupedTasks[randomHomeworkGroupedTasksDate]?[randomHomework].title ?? "", homeworkClass: groupedTasks[randomHomeworkGroupedTasksDate]?[randomHomework].classTag ?? classes[0], showHomeworkModal: $showHomeworkModal)
+                HomeworkModalCard(title: randomHomework.title, homeworkClass: randomHomework.classTag , showHomeworkModal: $showHomeworkModal)
             }
             .sheet(isPresented: $showAddHomeworkSheet) {
                 if #available(iOS 16.0, *) {
@@ -100,7 +102,10 @@ struct TodoListView: View {
 
                             }.padding(.bottom)
 
-                            //                        LeftTextSubtitle(text: "Priority:")
+                            HStack{
+                                Text("Priority:")
+                                Spacer()
+                            }
                             Picker("Priority", selection: $selectedPriority) {
                                 ForEach(priorities, id: \.id) { priority in
                                     Text(priority.name)
@@ -116,7 +121,7 @@ struct TodoListView: View {
                             .disabled(!isFormValid)
                         }
 
-                        .presentationDetents([.fraction(0.45)])
+                        .presentationDetents([.fraction(0.5)])
                     }.padding(.horizontal)
                 } else {
                     Text("TODO: ADD THE SAME Vstack")
@@ -127,7 +132,7 @@ struct TodoListView: View {
 
     private func addNewTodo() {
         guard !newTodoTitle.isEmpty else { return }
-        let newTodo = Task(title: newTodoTitle, dueDate: newHomeworkDate, priority: priorities[selectedPriority], classTag: classes[selectedClass])
+        let newTodo = Task(title: newTodoTitle, dueDate: newHomeworkDate, priority: priorities[selectedPriority], classTag: classes[selectedClass], order: priorities[selectedPriority].id)
         taskList.items.append(newTodo)
         newTodoTitle = ""
     }
@@ -147,6 +152,10 @@ struct TodoListView: View {
     var isFormValid: Bool {
         !newTodoTitle.isEmpty && selectedClass != 0
     }
+    
+    private func getUncompletedTasks(tasks: [Task]) -> [Task]{
+        return tasks.filter{!$0.isCompleted}
+    }
 
     // Computes a dictionary with tasks grouped by due date
     private var groupedTasks: [Date: [Task]] {
@@ -163,6 +172,8 @@ struct TodoListView: View {
             } else {
                 return nextWeek
             }
+        }.mapValues { tasks in
+            tasks.sorted { $0.order < $1.order } // Sort by order property of Task Object
         }
 
         return tasksByDueDate

@@ -25,12 +25,12 @@ struct TaskListItem: View {
                     checkTaskFunc(task)
                 }) {
                     Image(systemName: task.isCompleted ? "checkmark.square.fill" : "square")
-                        .foregroundColor(task.isCompleted ? .green : .primary)
+                        .foregroundColor(task.isCompleted ? task.classTag.color : .primary)
                         .scaledToFit()
                         .padding(.horizontal, 10)
                 }
                 VStack {
-                    LeftText(text: task.title, fontStyle: .bold(.body)(), crossText: task.isCompleted).padding(.bottom,0.2)
+                    LeftText(text: task.title, fontStyle: .bold(.body)(), crossText: task.isCompleted).padding(.bottom,0.2).foregroundColor(task.classTag.color)
                     LeftText(text: task.classTag.title, fontStyle: .callout, crossText: task.isCompleted)
                     LeftText(text: "Due date: " + dateFormatter.string(from:task.dueDate), fontStyle: .footnote, crossText: task.isCompleted)
                 }
@@ -45,7 +45,7 @@ struct TaskListItem: View {
 struct TaskListItem_Previews: PreviewProvider {
     static var previews: some View {
         List{
-            TaskListItem(task: Task(title: "Prueba", priority: Priority(id: 0, name: "High", color: .red), classTag: HomeworkClass(id: 0, title: "Math 📏", color: .blue, textColor: .white)), checkTaskFunc: {_ in
+            TaskListItem(task: Task(title: "Prueba", priority: Priority(id: 0, name: "High", color: .red), classTag: HomeworkClass(id: 0, title: "Math 📏", color: .blue, textColor: .white), order: 1), checkTaskFunc: {_ in
             })
         }
     }

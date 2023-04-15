@@ -15,13 +15,15 @@ class Task: Identifiable {
     var priority: Priority
     var classTag: HomeworkClass
     var isCompleted: Bool = false
+    var order: Int
     
-    init(title: String, dueDate: Date = Date.now, priority: Priority, classTag: HomeworkClass) {
+    init(title: String, dueDate: Date = Date.now, priority: Priority, classTag: HomeworkClass, order: Int) {
         self.title = title
         self.dueDate = dueDate
         self.priority = priority
         self.classTag = classTag
         self.completionDate = Date() // The Date gets Initialiced as Today but updated with completion
+        self.order = order
     }
     
     func getCompletionPoints() -> Int{

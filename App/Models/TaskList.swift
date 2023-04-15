@@ -19,10 +19,12 @@ class TaskList: ObservableObject{
                 restPoints(points: items[index].getCompletionPoints())
                 homeworksFinished -= 1
                 items[index].isCompleted = false
+                items[index].order -= 3
             }else{
                 addPoints(points: items[index].getCompletionPoints())
                 homeworksFinished += 1
                 items[index].isCompleted = true
+                items[index].order += 3
             }
         }
     }
