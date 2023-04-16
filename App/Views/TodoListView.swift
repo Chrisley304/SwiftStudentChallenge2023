@@ -13,7 +13,7 @@ struct TodoListView: View {
     let today = Date()
     @State private var showAddHomeworkSheet = false
     @State private var newHomeworkDate = Date()
-    @State private var randomHomework: Task = Task(title: "", priority: Priority(id: -1, name: "", color: .yellow), classTag: HomeworkClass(id: 0, title: "Class", color: .gray), order: 0)
+    @State private var randomHomework: Homework = Homework(title: "", priority: Priority(id: -1, name: "", color: .yellow), classTag: HomeworkClass(id: 0, title: "Class", color: .gray), order: 0)
 //    private var classes = ["Class", "Math 📏", "Biology 🌱", "Spanish", "English", "History 📚"]
     private var classes = [HomeworkClass(id: 0, title: "Class", color: .gray), HomeworkClass(id:1, title: "Math 📏", color: .blue, textColor: .white) , HomeworkClass(id:2, title: "Biology 🌱", color: .green) , HomeworkClass(id: 3, title: "Spanish", color: .red), HomeworkClass(id:4, title: "English", color: .blue), HomeworkClass(id:5, title: "History 📚", color: .brown)]
     @State private var selectedClass = 0
@@ -132,7 +132,7 @@ struct TodoListView: View {
 
     private func addNewTodo() {
         guard !newTodoTitle.isEmpty else { return }
-        let newTodo = Task(title: newTodoTitle, dueDate: newHomeworkDate, priority: priorities[selectedPriority], classTag: classes[selectedClass], order: priorities[selectedPriority].id)
+        let newTodo = Homework(title: newTodoTitle, dueDate: newHomeworkDate, priority: priorities[selectedPriority], classTag: classes[selectedClass], order: priorities[selectedPriority].id)
         taskList.items.append(newTodo)
         newTodoTitle = ""
     }
@@ -141,11 +141,11 @@ struct TodoListView: View {
 //
 //    }
 
-    private func checkHomework(homework: Task) {
+    private func checkHomework(homework: Homework) {
         taskList.toggleItemCompletion(homework)
     }
 
-    private func deleteHomework(homework: Task) {
+    private func deleteHomework(homework: Homework) {
         taskList.deleteItem(homework)
     }
 
@@ -153,12 +153,12 @@ struct TodoListView: View {
         !newTodoTitle.isEmpty && selectedClass != 0
     }
     
-    private func getUncompletedTasks(tasks: [Task]) -> [Task]{
+    private func getUncompletedTasks(tasks: [Homework]) -> [Homework]{
         return tasks.filter{!$0.isCompleted}
     }
 
     // Computes a dictionary with tasks grouped by due date
-    private var groupedTasks: [Date: [Task]] {
+    private var groupedTasks: [Date: [Homework]] {
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
         let nextWeek = Calendar.current.date(byAdding: .day, value: 6, to: today)!
 

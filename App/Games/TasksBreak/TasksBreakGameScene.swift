@@ -4,10 +4,10 @@ import GameKit
 
 class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
     
-//    let background = SKSpriteNode(imageNamed: "bg_layer3")
     let paddel = SKSpriteNode(color: .blue, size: CGSize(width: 120, height: 15))
-//    let ball = SKSpriteNode(imageNamed: "ballBlue")
     let ball = SKShapeNode()
+    
+    var tasksList: [String]? = ["TEST"]
     
     var stoneCounter = 0
     let boxWidth = 100
@@ -85,6 +85,10 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         
     }
     
+    func getRandomHomeworkIndex() -> Int{
+        return Int.random(in: 0...((tasksList!.count - 1) ))
+    }
+    
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
@@ -125,7 +129,7 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
             box.position = CGPoint(x: 0 + (i*boxWidth), y: y)
             box.zPosition = 10
             
-            let label = SKLabelNode(text: "Equations 📏")
+            let label = SKLabelNode(text: tasksList![self.getRandomHomeworkIndex()])
             label.fontName = "Helvetica"
             label.fontSize = 12
             label.fontColor = .black

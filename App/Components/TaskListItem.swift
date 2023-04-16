@@ -9,13 +9,13 @@ import SwiftUI
 
 
 struct TaskListItem: View {
-    var task: Task
+    var task: Homework
     let dateFormatter : DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter
     }()
-    var checkTaskFunc: (Task) -> Void
+    var checkTaskFunc: (Homework) -> Void
     
     var body: some View {
         
@@ -45,7 +45,7 @@ struct TaskListItem: View {
 struct TaskListItem_Previews: PreviewProvider {
     static var previews: some View {
         List{
-            TaskListItem(task: Task(title: "Prueba", priority: Priority(id: 0, name: "High", color: .red), classTag: HomeworkClass(id: 0, title: "Math 📏", color: .blue, textColor: .white), order: 1), checkTaskFunc: {_ in
+            TaskListItem(task: Homework(title: "Prueba", priority: Priority(id: 0, name: "High", color: .red), classTag: HomeworkClass(id: 0, title: "Math 📏", color: .blue, textColor: .white), order: 1), checkTaskFunc: {_ in
             })
         }
     }

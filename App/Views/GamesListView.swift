@@ -9,39 +9,31 @@ import SpriteKit
 import SwiftUI
 
 struct GamesListView: View {
-    @State private var initiateTaskBreakGame = false
+    @EnvironmentObject var taskList: TaskList
 
     var body: some View {
-        //                SpriteView(scene: TasksBreakGameScene()).ignoresSafeArea()
         NavigationView {
             List {
-                Button("Tasks Break 💥") {
-                    initiateTaskBreakGame.toggle()
-                }.fullScreenCover(isPresented: $initiateTaskBreakGame) {
-                    ZStack {
-                        SpriteView(scene: TasksBreakGameScene()).ignoresSafeArea()
-                        Button(action: {
-                            initiateTaskBreakGame.toggle()
-                        }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 25, height: 25)
-                                .foregroundColor(.gray)
-                        }
-                        .position(x: UIScreen.main.bounds.width - 30, y: 30)
-    //                    .position(x:20,y:20)
-    //                    .offset(x: -5, y: -5)
-                    }
-                }
+                GamesListItem(gameTitle: "Tasks Breaker", gameDescription: "Destroy your accomplished tasks!" , gameImage: "BrickBreaker", isLocked: isTasksBreakerLocked, gameScene: tasksBreakGame)
             }
             .navigationTitle("Games")
         }
+    }
+    
+    var tasksBreakGame: SKScene {
+        let scene = TasksBreakGameScene()
+        scene.tasksList = taskList.items.filter{$0.isCompleted}.map{$0.title} // Returns a list (titles) of homeworks finished
+        return scene
+    }
+    
+    var isTasksBreakerLocked: Bool {
+        return taskList.studentPoints < 50
     }
 }
 
 struct GamesListView_Previews: PreviewProvider {
     static var previews: some View {
-        GamesListView()
+        let taskList = TaskList(studentPoints: 50)
+        GamesListView().environmentObject(taskList)
     }
 }

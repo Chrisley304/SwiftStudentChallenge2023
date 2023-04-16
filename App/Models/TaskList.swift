@@ -8,11 +8,17 @@
 import Foundation
 
 class TaskList: ObservableObject{
-    @Published var items = [Task]()
+    @Published var items = [Homework]()
     @Published var studentPoints = 0
     @Published var homeworksFinished = 0
     
-    func toggleItemCompletion(_ item: Task) {
+    init(items: [Homework] = [Homework](), studentPoints: Int = 0, homeworksFinished: Int = 0) {
+        self.items = items
+        self.studentPoints = studentPoints
+        self.homeworksFinished = homeworksFinished
+    }
+    
+    func toggleItemCompletion(_ item: Homework) {
         if let index = items.firstIndex(where: { $0.id == item.id }) {
             // If it was already compleated rest the points
             if items[index].isCompleted{
@@ -29,7 +35,7 @@ class TaskList: ObservableObject{
         }
     }
     
-    func deleteItem(_ item: Task) {
+    func deleteItem(_ item: Homework) {
         items.removeAll(where: { $0.id == item.id })
     }
     

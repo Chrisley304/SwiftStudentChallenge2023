@@ -15,10 +15,12 @@ struct ContentView: View {
                     Label("Games", systemImage: "gamecontroller")
                 }
 
-            FunFactsView()
-                .tabItem {
-                    Label("Points", systemImage: "lanyardcard")
-                }
+            if #available(iOS 16.0, *) {
+                MyScoreView()
+                    .tabItem {
+                        Label("Points", systemImage: "lanyardcard")
+                    }
+            }
         }
     }
 }

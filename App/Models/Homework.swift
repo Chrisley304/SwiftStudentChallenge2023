@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Task: Identifiable {
+class Homework: Identifiable {
     let id = UUID()
     var title: String
     var dueDate: Date
