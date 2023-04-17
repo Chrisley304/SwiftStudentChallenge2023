@@ -7,7 +7,7 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
     let paddel = SKSpriteNode(color: .blue, size: CGSize(width: 120, height: 15))
     let ball = SKShapeNode()
     
-    var tasksList: [String]? = ["TEST"]
+    let tasksList: [Homework]
     
     var stoneCounter = 0
     let boxWidth = 100
@@ -22,17 +22,27 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         case ball = 0b1000 //8
     }
     
+    init(size: CGSize, tasksList: [Homework]) {
+        self.tasksList = tasksList
+        super.init(size: size)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func didMove(to view: SKView) {
         scene?.size = view.bounds.size
         scene?.scaleMode = .aspectFill
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
         self.isPaused = true
+        backgroundColor = .systemBackground
         
         physicsWorld.contactDelegate = self
         
         // Player
-        paddel.position = CGPoint(x: size.width / 2, y: 25)
+        paddel.position = CGPoint(x: size.width / 2, y: 40)
         paddel.zPosition = 10
         paddel.physicsBody = SKPhysicsBody(rectangleOf: paddel.size)
         paddel.physicsBody?.allowsRotation = false
@@ -75,18 +85,18 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         
         // Stones
         
-        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100)
-        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100 - (1*boxHeight))
-        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100 - (2*boxHeight))
-        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100 - (3*boxHeight))
-        makeStones(reihe: 3, bitmask: 0b100, y: Int(size.height) - 100 - (4*boxHeight))
+        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100)
+        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100 - (1*boxHeight))
+        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100 - (2*boxHeight))
+        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100 - (3*boxHeight))
+        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100 - (4*boxHeight))
         
         // 33 Stones
         
     }
     
     func getRandomHomeworkIndex() -> Int{
-        return Int.random(in: 0...((tasksList!.count - 1) ))
+        return Int.random(in: 0...((tasksList.count - 1) ))
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -95,7 +105,8 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
             paddel.position.x = location.x
             
             if isPaused == true{
-                ball.position.x = location.x   
+                ball.position.x = location.x
+                stoneCounter = 0
             }
         }
     }
@@ -103,12 +114,6 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.isPaused = false
     }
-    
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        if isPaused == false{
-//            self.isPaused = false
-//        }
-//    }
     
     override func update ( _ currentTime: TimeInterval) {
         if paddel.position.x < 50 {
@@ -119,20 +124,21 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         }
     }
     
-    func makeStones(reihe: Int, bitmask: UInt32, y: Int){
-        for i in 1...reihe{
+    func createBlocks(n: Int, bitmask: UInt32, y: Int){
+        for i in 1...n{
             
+            let randomHomework = tasksList[self.getRandomHomeworkIndex()]
             let box = SKShapeNode(rectOf: CGSize(width: boxWidth, height: boxHeight))
-            box.fillColor = .white
+            box.fillColor = UIColor(randomHomework.classTag.color)
             box.strokeColor = .black
             box.name = "Box"+String(i)
             box.position = CGPoint(x: 0 + (i*boxWidth), y: y)
             box.zPosition = 10
             
-            let label = SKLabelNode(text: tasksList![self.getRandomHomeworkIndex()])
+            let label = SKLabelNode(text: randomHomework.title)
             label.fontName = "Helvetica"
             label.fontSize = 12
-            label.fontColor = .black
+            label.fontColor = UIColor(randomHomework.classTag.textColor)
             label.horizontalAlignmentMode = .center
             label.verticalAlignmentMode = .center
             
@@ -195,7 +201,7 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         if contactA.categoryBitMask == bitmasks.frame.rawValue && contactB.categoryBitMask == bitmasks.ball.rawValue{
             let yPos = contact.contactPoint.y
             
-            if yPos <= self.frame.minY + 10 {
+            if yPos <= self.frame.minY + 20 {
                 gameOver()
             }
         }
@@ -203,15 +209,15 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func gameOver(){
-        let gameOverScene = TasksBreakGameOverScene(size: self.size)
-        let transition = SKTransition.flipHorizontal(withDuration: 2)
+        let gameOverScene = TasksBreakGameOverScene(size: self.size, homeworkCount: self.stoneCounter, homeworksList: tasksList)
+        let transition = SKTransition.fade(with: .red, duration: 2)
         
         self.view?.presentScene(gameOverScene, transition: transition) 
     }
     
     func finishGame(){
         let finishScene = TasksBreakFinishScene(size: self.size)
-        let transition = SKTransition.doorsCloseHorizontal(withDuration: 2)
+        let transition = SKTransition.reveal(with: .down, duration: 2)
         
         self.view?.presentScene(finishScene, transition: transition)
     }

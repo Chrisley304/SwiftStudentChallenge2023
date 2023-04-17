@@ -21,8 +21,9 @@ struct GamesListView: View {
     }
     
     var tasksBreakGame: SKScene {
-        let scene = TasksBreakGameScene()
-        scene.tasksList = taskList.items.filter{$0.isCompleted}.map{$0.title} // Returns a list (titles) of homeworks finished
+        let filteredHomeworks = taskList.items.filter{$0.isCompleted} // Returns a list (titles) of homeworks finished
+        let scene = TasksBreakGameScene(size: .init(), tasksList: filteredHomeworks)
+        scene.stoneCounter = 0
         return scene
     }
     

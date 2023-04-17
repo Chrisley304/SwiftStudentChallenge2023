@@ -58,6 +58,9 @@ struct GamesListItem: View {
                 SpriteView(scene: gameScene).ignoresSafeArea()
                 Button(action: {
                     initGame.toggle()
+                    gameScene.removeAllChildren()
+                    gameScene.removeFromParent()
+                    gameScene.view?.presentScene(nil)
                 }) {
                     Image(systemName: "xmark.circle.fill")
                         .resizable()
@@ -74,7 +77,7 @@ struct GamesListItem: View {
 struct GamesListItem_Previews: PreviewProvider {
     static var previews: some View {
         List {
-            GamesListItem(gameTitle: "TaskBreaker", gameDescription: "Destroy your tasks!",  gameImage: "BrickBreaker", isLocked: false, gameScene: TasksBreakGameScene())
+            GamesListItem(gameTitle: "TaskBreaker", gameDescription: "Destroy your tasks!",  gameImage: "BrickBreaker", isLocked: false, gameScene: TasksBreakGameScene(size: .init(), tasksList: [Homework(title: "TEST", priority: Priority(id: 0, name: "", color: .black), classTag: HomeworkClass(id: 0, title: "Class", color: .green), order: 0)]))
         }
     }
 }
