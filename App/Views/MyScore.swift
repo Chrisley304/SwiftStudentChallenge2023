@@ -15,36 +15,44 @@ struct MyScoreView: View {
     @State private var selectedColor: Color = .blue
     @State private var selectedImg: PhotosPickerItem? = nil
     @State private var selectedColorIndex: Int = 0
-    private var colors: [Color] = [.blue,.green,.red,.yellow,.purple,.cyan,.mint]
+    @State private var studentName: String = "Write your name here!"
+    private var colors: [Color] = [.cyan,.blue,.green,.red,.yellow,.purple,.mint, .pink]
 
     var body: some View {
         NavigationView {
-            VStack {
-                PointsCard(backgroundColor: selectedColor, points: taskList.studentPoints)
-                
-                Button(action: {
-                    if selectedColorIndex == (colors.count-1) {
-                        selectedColorIndex = 0
-                    }else{
-                        selectedColorIndex += 1
+            ScrollView {
+                VStack {
+                    PointsCard(backgroundColor: selectedColor, points: taskList.studentPoints, userName: $studentName, editMode: true, userImg: $userImage).padding(.horizontal)
+                    
+                    Button(action: {
+                        if selectedColorIndex == (colors.count-1) {
+                            selectedColorIndex = 0
+                        }else{
+                            selectedColorIndex += 1
+                        }
+                        selectedColor = colors[selectedColorIndex]
+                    }) {
+                        Text("Change color")
+                            .fontWeight(.semibold)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(selectedColor)
+                            .foregroundColor(.white)
+                            .cornerRadius(20)
                     }
-                    selectedColor = colors[selectedColorIndex]
-                }) {
-                    Text("Change color")
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(selectedColor)
-                        .foregroundColor(.white)
-                        .cornerRadius(20)
-                }
-                .padding(.vertical, 16)
-                
-                ShareLink(item: Image(uiImage: ImageRenderer(content: PointsCard(backgroundColor: selectedColor, points: taskList.studentPoints)).uiImage!), preview: SharePreview("TEST", image: Image(uiImage: ImageRenderer(content: PointsCard(backgroundColor: selectedColor, points: taskList.studentPoints)).uiImage!)))
+                    .padding(.vertical, 16)
+                    
+                    ShareLink(item: Image(uiImage: ImageRenderer(content: cardImage ).uiImage!), preview: SharePreview("\(studentName) Points Card", image: Image(uiImage: ImageRenderer(content: cardImage).uiImage!)))
 
-                Spacer()
-            }.navigationTitle("Points")
+                    Spacer()
+                }.navigationTitle("Points")
+            }
+            
         }
+    }
+    
+    var cardImage: PointsCard{
+        return PointsCard(backgroundColor: selectedColor, points: taskList.studentPoints, userName: $studentName, editMode: false, userImg: $userImage, userImgStatic: userImage)
     }
 }
 

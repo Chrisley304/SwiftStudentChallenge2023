@@ -1,71 +1,87 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by Christian Leyva on 16/04/23.
 //
 
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 @available(iOS 16.0, *)
 struct PointsCard: View {
-    
     var backgroundColor: Color
     let points: Int
-    @State private var userImg: Image = Image("Placeholder")
-    @State private var selectedImg: PhotosPickerItem? = nil
-    @State private var userName: String = "Write your name here!"
+    @Binding public var userName: String
+    let editMode: Bool
+    @Binding public var userImg: Image
+    var userImgStatic: Image = Image("Placeholder")
     
+    @State private var selectedImg: PhotosPickerItem? = nil
+    @State private var avatarItem: PhotosPickerItem?
+
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20).fill(backgroundColor)
+            RoundedRectangle(cornerRadius: 20).fill(backgroundColor).frame(width: .infinity)
             VStack {
                 Spacer()
                 Text("StudyCompa 📓").font(.largeTitle)
                 Spacer()
-                
-                userImg
+
+                if editMode{
+                    userImg
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
                     .frame(width: 120, height: 120)
+                    .scaledToFill()
                     .clipShape(Circle())
                     .overlay(alignment: .bottomTrailing) {
-                        PhotosPicker(selection: $selectedImg,
-                                     matching: .images,
-                                     photoLibrary: .shared()) {
-                            Image(systemName: "pencil.circle.fill")
-                                .symbolRenderingMode(.multicolor)
-                                .font(.system(size: 30))
-                                .foregroundColor(.gray)
-                        }
-//                                     .onChange(of: selectedImg) { newImg in
-//                                         Task {
-//                                             if let data = try? await newImg?.loadTransferable(type: Image.self) {
-//                                                 userImg = data
-//                                             }
-//                                         }
-//                                     }
-                                     .buttonStyle(.borderless)
+                        
+                            PhotosPicker(selection: $avatarItem,
+                                         matching: .images) {
+                                Image(systemName: "pencil.circle.fill")
+                                    .symbolRenderingMode(.multicolor)
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.gray)
+                                    .buttonStyle(.borderless)
+                            }
+                        
                     }
-                
-                TextField("", text: $userName).font(.title).multilineTextAlignment(.center)
+                }else{
+                    userImgStatic
+                        .resizable()
+                        .frame(width: 120, height: 120)
+                        .scaledToFill()
+                        .clipShape(Circle())
+                }
+                if editMode {
+                    TextField("", text: $userName).font(.title).multilineTextAlignment(.center)
+                } else {
+                    Text(userName).font(.title).multilineTextAlignment(.center)
+                }
                 Spacer()
-                
+
                 Text(String(points))
                     .font(.system(size: 75))
                 Text("points").font(.title)
                 Spacer()
                 Spacer()
+            }.onChange(of: avatarItem) { _ in
+                Task {
+                    if let data = try? await avatarItem?.loadTransferable(type: Data.self) {
+                        if let uiImage = UIImage(data: data) {
+                            userImg = Image(uiImage: uiImage)
+                            return
+                        }
+                    }
+                }
             }
-        }.frame(width: .infinity, height: 450).padding()
+        }.frame(height: 450)
     }
 }
-
 
 @available(iOS 16.0, *)
 struct PointsCard_Previews: PreviewProvider {
     static var previews: some View {
-        PointsCard(backgroundColor: .blue, points: 50)
+        PointsCard(backgroundColor: .blue, points: 50, userName: .constant("Put your name here!"), editMode: true, userImg: .constant(Image("Placeholder")))
     }
 }
