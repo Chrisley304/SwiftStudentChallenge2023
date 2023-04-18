@@ -12,10 +12,11 @@ struct IntroView: View {
 
     @State private var pageIndex = 0
     private let pages: [IntroPage] = [
-        IntroPage(name: "Welcome to StudyCompa!", description: "The best companition app for the Students!", imageUrl: "students-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 0),
-        IntroPage(name: "Organize your homeworks", description: "Add your homeworks to the app and WIN POINTS by accomplish them. You get 10 points for each homework and if you accomplish a homework before it's due date you get 5 extra points for each extra day!", imageUrl: "planning-man-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 1),
-        IntroPage(name: "Get fun!", description: "With the points that you win in the app you can unlock diferent games.", imageUrl: "man-rocket-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 2),
-        IntroPage(name: "Show your points!", description: "Modify your StudyCompa card with your name & photo and share it with your friends!", imageUrl: "woman-goal-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 3),
+        IntroPage(name: "Welcome to StudyCompa!", description: "The best companion app for students!", imageUrl: "students-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 0),
+        IntroPage(name: "Organize your homeworks 📚", description: "Add homework assignments to the app with due dates, class, and priority. Press the \"Give me homework\" button when you're feeling overwhelmed and need help deciding what to work on.", imageUrl: "man-planning-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 1),
+        IntroPage(name: "Win points with your homeworks 💯", description: "You will receive 10 points for each homework, and if you complete a homework before its due date, you will receive an additional 5 points for each day early.", imageUrl: "planning-man-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 2),
+        IntroPage(name: "Get fun! 👾", description: "With the points that you win in the app, you can unlock diferent games.", imageUrl: "man-rocket-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 3),
+        IntroPage(name: "Show your points! 🥇", description: "Customize your StudyCompa card by adding your name and photo. Then, share it with your friends!", imageUrl: "woman-goal-illustration", imageAttrib: "Illustration obtained from: IconScout Free Startup Illustration Pack", tag: 4),
     ]
     private let dotAppearance = UIPageControl.appearance()
 

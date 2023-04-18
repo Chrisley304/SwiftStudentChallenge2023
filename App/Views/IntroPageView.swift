@@ -16,22 +16,21 @@ struct IntroPageView: View {
                 Image("\(page.imageUrl)")
                 .resizable()
                 .scaledToFit()
-                .cornerRadius(30)
                 .background(.white)
-                HStack {
-                    Spacer()
-                    Text(page.imageAttrib)
-                        .font(.footnote).foregroundColor(.gray)
-                }
+                .cornerRadius(30)
+                Text(page.imageAttrib)
+                    .font(.footnote).foregroundColor(.gray).multilineTextAlignment(.trailing)
+                
             }
             .padding()
             .padding()
             Text(page.name)
-                .font(.title)
+                .font(.title).frame(width: 350).multilineTextAlignment(.center)
             
             Text(page.description)
                 .font(.subheadline)
                 .frame(width: 300)
+                .multilineTextAlignment(.center)
         }
     }
 }

@@ -136,7 +136,7 @@ struct TodoListView: View {
             }
         }.fullScreenCover(isPresented: $showIntro){
             IntroView(isShown: $showIntro)
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
             
     }
 

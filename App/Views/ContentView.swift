@@ -18,7 +18,7 @@ struct ContentView: View {
             if #available(iOS 16.0, *) {
                 MyScoreView()
                     .tabItem {
-                        Label("Points", systemImage: "lanyardcard")
+                        Label("My Points", systemImage: "lanyardcard")
                     }
             }
         }

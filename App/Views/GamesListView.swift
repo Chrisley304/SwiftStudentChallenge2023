@@ -17,7 +17,7 @@ struct GamesListView: View {
                 GamesListItem(gameTitle: "Tasks Breaker", gameDescription: "Destroy your accomplished tasks!" , gameImage: "BrickBreaker", isLocked: isTasksBreakerLocked, gameScene: tasksBreakGame)
             }
             .navigationTitle("Games")
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
     
     var tasksBreakGame: SKScene {

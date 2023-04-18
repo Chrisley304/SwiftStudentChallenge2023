@@ -45,10 +45,10 @@ struct MyScoreView: View {
                     ShareLink(item: Image(uiImage: ImageRenderer(content: cardImage ).uiImage!), preview: SharePreview("\(studentName) Points Card", image: Image(uiImage: ImageRenderer(content: cardImage).uiImage!)))
 
                     Spacer()
-                }.navigationTitle("Points")
+                }.navigationTitle("My Points").padding(.top, 30)
             }
             
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
     
     var cardImage: PointsCard{

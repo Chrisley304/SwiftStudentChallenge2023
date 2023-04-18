@@ -22,7 +22,7 @@ struct PointsCard: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20).fill(backgroundColor).frame(width: .infinity)
+            RoundedRectangle(cornerRadius: 20).fill(backgroundColor)
             VStack {
                 Spacer()
                 Text("StudyCompa 📓").font(.largeTitle)
@@ -55,6 +55,7 @@ struct PointsCard: View {
                 }
                 if editMode {
                     TextField("", text: $userName).font(.title).multilineTextAlignment(.center)
+                        .submitLabel(.done)
                         .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidBeginEditingNotification)) { obj in
                             if let textField = obj.object as? UITextField {
                                 textField.selectedTextRange = textField.textRange(from: textField.beginningOfDocument, to: textField.endOfDocument)
@@ -80,7 +81,7 @@ struct PointsCard: View {
                     }
                 }
             }
-        }.frame(height: 450)
+        }.frame( width: 350 , height: 450)
     }
 }
 

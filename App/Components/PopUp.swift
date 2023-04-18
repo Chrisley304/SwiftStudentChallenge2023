@@ -23,7 +23,7 @@ struct Popup<T: View>: ViewModifier {
         GeometryReader { geometry in
             if isPresented {
                 popup
-                    .animation(.easeInOut)
+                    .animation(.easeInOut, value: 0)
 //                    .transition(.offset(x: 0, y: direction.offset(popupFrame: geometry.frame(in: .global)) ) )
                     .transition(.opacity)
                     .frame(width: geometry.size.width, height: geometry.size.height, alignment: alignment)
