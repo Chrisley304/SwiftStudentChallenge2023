@@ -55,6 +55,11 @@ struct PointsCard: View {
                 }
                 if editMode {
                     TextField("", text: $userName).font(.title).multilineTextAlignment(.center)
+                        .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidBeginEditingNotification)) { obj in
+                            if let textField = obj.object as? UITextField {
+                                textField.selectedTextRange = textField.textRange(from: textField.beginningOfDocument, to: textField.endOfDocument)
+                            }
+                        }
                 } else {
                     Text(userName).font(.title).multilineTextAlignment(.center)
                 }
@@ -82,6 +87,6 @@ struct PointsCard: View {
 @available(iOS 16.0, *)
 struct PointsCard_Previews: PreviewProvider {
     static var previews: some View {
-        PointsCard(backgroundColor: .blue, points: 50, userName: .constant("Put your name here!"), editMode: true, userImg: .constant(Image("Placeholder")))
+        PointsCard(backgroundColor: .red, points: 50, userName: .constant("Put your name here!"), editMode: true, userImg: .constant(Image("Placeholder")))
     }
 }

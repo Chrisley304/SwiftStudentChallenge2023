@@ -1,5 +1,5 @@
 //
-//  SwiftUIView.swift
+//  MyScore.swift
 //
 //
 //  Created by Christian Leyva on 15/04/23.
@@ -12,7 +12,7 @@ import SwiftUI
 struct MyScoreView: View {
     @State private var userImage: Image = Image("Placeholder")
     @EnvironmentObject var taskList: TaskList
-    @State private var selectedColor: Color = .blue
+    @State private var selectedColor: Color = .cyan
     @State private var selectedImg: PhotosPickerItem? = nil
     @State private var selectedColorIndex: Int = 0
     @State private var studentName: String = "Write your name here!"

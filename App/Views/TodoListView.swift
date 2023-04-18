@@ -14,12 +14,12 @@ struct TodoListView: View {
     @State private var showAddHomeworkSheet = false
     @State private var newHomeworkDate = Date()
     @State private var randomHomework: Homework = Homework(title: "", priority: Priority(id: -1, name: "", color: .yellow), classTag: HomeworkClass(id: 0, title: "Class", color: .gray), order: 0)
-//    private var classes = ["Class", "Math 📏", "Biology 🌱", "Spanish", "English", "History 📚"]
     private var classes = [HomeworkClass(id: 0, title: "Class", color: .gray), HomeworkClass(id:1, title: "Math 📏", color: .blue, textColor: .white) , HomeworkClass(id:2, title: "Biology 🌱", color: .green) , HomeworkClass(id: 3, title: "Spanish", color: .red), HomeworkClass(id:4, title: "English", color: .blue), HomeworkClass(id:5, title: "History 📚", color: .brown)]
     @State private var selectedClass = 0
     private var priorities = [Priority(id: 0, name: "High 🚨", color: .red, textColor: .white), Priority(id: 1, name: "Medium ⚠️", color: .yellow), Priority(id: 2, name: "Low ✌🏼", color: .green, textColor: .white)]
     @State private var selectedPriority = 0
     @State public var showHomeworkModal = false
+    @State private var showIntro = true
 
     var body: some View {
         NavigationView {
@@ -30,7 +30,7 @@ struct TodoListView: View {
                         ColorCard(color: Color.yellow, title: "Points earned", text: String(taskList.studentPoints))
                     }
                 }.background(Color.clear).headerProminence(.increased)
-
+                
                 if groupedTasks.isEmpty{
                     Text("You don't have homeworks. Add a new one!")
                 }else{
@@ -62,6 +62,13 @@ struct TodoListView: View {
                         showAddHomeworkSheet.toggle()
                     } label: {
                         Image(systemName: "plus")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading){
+                    Button {
+                        showIntro.toggle()
+                    } label: {
+                        Image(systemName: "questionmark.circle")
                     }
                 }
             }
@@ -99,9 +106,9 @@ struct TodoListView: View {
                                         Text(homClass.title)
                                     }
                                 }
-
+                                
                             }.padding(.bottom)
-
+                            
                             HStack{
                                 Text("Priority:")
                                 Spacer()
@@ -111,7 +118,7 @@ struct TodoListView: View {
                                     Text(priority.name)
                                 }
                             }.pickerStyle(.segmented)
-
+                            
                             Spacer()
                             Button(action: self.addNewTodo) {
                                 Text("Add Homework ✏️").padding(5)
@@ -120,14 +127,17 @@ struct TodoListView: View {
                             .tint(.blue)
                             .disabled(!isFormValid)
                         }
-
+                        
                         .presentationDetents([.fraction(0.5)])
                     }.padding(.horizontal)
                 } else {
                     Text("TODO: ADD THE SAME Vstack")
                 }
             }
+        }.fullScreenCover(isPresented: $showIntro){
+            IntroView(isShown: $showIntro)
         }
+            
     }
 
     private func addNewTodo() {
@@ -136,10 +146,6 @@ struct TodoListView: View {
         taskList.items.append(newTodo)
         newTodoTitle = ""
     }
-
-//    private func getRandomHomework() {
-//
-//    }
 
     private func checkHomework(homework: Homework) {
         taskList.toggleItemCompletion(homework)
