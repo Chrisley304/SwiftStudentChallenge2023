@@ -1,5 +1,5 @@
 //
-//  SwiftUIView.swift
+//  GamesListView.swift
 //
 //
 //  Created by Christian Leyva on 09/04/23.
@@ -34,7 +34,11 @@ struct GamesListView: View {
 
 struct GamesListView_Previews: PreviewProvider {
     static var previews: some View {
-        let taskList = TaskList(studentPoints: 50)
+        var taskList: TaskList {
+            let tasks = TaskList(studentPoints: 50)
+            tasks.items.append(Homework(title: "TEST", dueDate: Date(), priority: Priority(id: 1, name: "", color: .black), classTag: HomeworkClass(id: 0, title: "", color: .accentColor), order: 0))
+            return tasks
+        }
         GamesListView().environmentObject(taskList)
     }
 }

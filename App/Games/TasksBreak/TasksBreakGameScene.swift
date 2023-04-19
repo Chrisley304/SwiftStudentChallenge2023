@@ -13,7 +13,7 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
     let boxWidth = 100
     let boxHeight = 30
     var ballVelocity = 15
-    
+    var numberOfBlocks = 1
     
     enum bitmasks: UInt32{
         case frame = 0b1 // 1
@@ -78,20 +78,26 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         // Frame
         let frame = SKPhysicsBody(edgeLoopFrom: self.frame)
         frame.friction = 0
+        frame.restitution = 1
         frame.categoryBitMask = bitmasks.frame.rawValue
         frame.contactTestBitMask = bitmasks.ball.rawValue
         frame.collisionBitMask = bitmasks.ball.rawValue
         self.physicsBody = frame
         
         // Stones
+        numberOfBlocks = Int(size.width) / Int(boxWidth)
         
-        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100)
-        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100 - (1*boxHeight))
-        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100 - (2*boxHeight))
-        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100 - (3*boxHeight))
-        createBlocks(n: 3, bitmask: 0b100, y: Int(size.height) - 100 - (4*boxHeight))
+        if numberOfBlocks > 3{
+            numberOfBlocks = numberOfBlocks - 1 // For iPads
+        }
         
-        // 33 Stones
+//        print("Number of blocks: ", numberOfBlocks )
+        
+        createBlocks(n: numberOfBlocks, bitmask: 0b100, y: Int(size.height) - 100)
+        createBlocks(n: numberOfBlocks, bitmask: 0b100, y: Int(size.height) - 100 - (1*boxHeight))
+        createBlocks(n: numberOfBlocks, bitmask: 0b100, y: Int(size.height) - 100 - (2*boxHeight))
+        createBlocks(n: numberOfBlocks, bitmask: 0b100, y: Int(size.height) - 100 - (3*boxHeight))
+        createBlocks(n: numberOfBlocks, bitmask: 0b100, y: Int(size.height) - 100 - (4*boxHeight))
         
     }
     
@@ -168,19 +174,21 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
             contactB = contact.bodyA // ball
         }
         if contactA.categoryBitMask == bitmasks.box.rawValue && contactB.categoryBitMask == bitmasks.ball.rawValue {
-            contactA.node?.removeFromParent()
-            stoneCounter += 1
-            
+            if (contactA.node != nil){
+                contactA.node?.removeFromParent()
+                stoneCounter += 1
+            }
+            ball.physicsBody?.applyImpulse(CGVector(dx: 0,dy: -ballVelocity/4))
             // Score board
-            if stoneCounter == 15{
+            print("Stone Counter: ",stoneCounter)
+//            print("Scoreboard limit: ",numberOfBlocks*5)
+            
+            if stoneCounter >= numberOfBlocks*5{
                 finishGame()
             }
             
             // Add impulse to the ball when the user get 5 points
-            if stoneCounter == 5{
-                ballVelocity += 1
-                ball.physicsBody?.applyImpulse(CGVector(dx: ballVelocity, dy: ballVelocity))
-            }else if stoneCounter == 10 {
+            if stoneCounter % 5 == 0{
                 ballVelocity += 1
                 ball.physicsBody?.applyImpulse(CGVector(dx: ballVelocity, dy: ballVelocity))
             }
@@ -188,11 +196,11 @@ class TasksBreakGameScene: SKScene, SKPhysicsContactDelegate{
         }
         
         if contactA.categoryBitMask == bitmasks.paddel.rawValue && contactB.categoryBitMask == bitmasks.ball.rawValue{
-            if contactB.node!.position.x <= contactA.node!.frame.midX-5{
+            if contactB.node!.position.x <= contactA.node!.frame.midX-2{
                 contactB.node?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 contactB.node?.physicsBody?.applyImpulse(CGVector(dx: -ballVelocity, dy: ballVelocity))
             }
-            if contactB.node!.position.x <= contactA.node!.frame.midX+5{
+            if contactB.node!.position.x <= contactA.node!.frame.midX+2{
                 contactB.node?.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                 contactB.node?.physicsBody?.applyImpulse(CGVector(dx: ballVelocity, dy: ballVelocity))
             }
